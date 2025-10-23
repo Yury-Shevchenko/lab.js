@@ -432,6 +432,33 @@ it('can jump backward to an old component', async () => {
   expect(s.internals.controller.currentLeaf).toEqual(b)
 })
 
+it('can jump to the same component, restarting it in the process', async () => {
+  const a = new Component({ id: 'a' })
+  const b = new Component({ id: 'b' })
+  const c = new Component({ id: 'c' })
+  const d = new Component({ id: 'd' })
+
+  const s = makeShimSequence([a, b, c, d], { id: 's' })
+
+  // Setup spys
+  const b_run = jest.fn()
+  b.on('run', b_run)
+
+  await s.run()
+  await a.end()
+
+  expect(s.internals.controller.currentLeaf).toEqual(b)
+  expect(b_run.mock.calls.length).toBe(1)
+
+  // Jump to running component
+  await s.internals.controller.jump('jump', {
+    targetStack: ['b'],
+  })
+
+  expect(s.internals.controller.currentLeaf).toEqual(b)
+  expect(b_run.mock.calls.length).toBe(2)
+})
+
 it('can jump from and to tardy components', async () => {
   const a = new Component({ id: 'a' })
   const b = new Component({ id: 'b' })

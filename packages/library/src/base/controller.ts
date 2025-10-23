@@ -176,6 +176,12 @@ export class Controller<C extends Component = Component> extends Emitter {
           }
         }
 
+        // Handle the edge case of jumping without changing the stack --
+        // in this case we jump to the currently running component, restarting it
+        if (commonStack.length === currentStackIds.length) {
+          commonStack.pop()
+        }
+
         this.context = await this.iterator?.tempSplice(commonStack.length + 1, {
           flipData: {},
           context: this.context,
