@@ -89,15 +89,15 @@ export class Controller extends BaseController<Component> {
     this.#random = random
   }
 
-  createRNG(seedFragment: String, options: RNGOptions = {}) {
+  createRNG(seedFragment: String, options: Partial<RNGOptions> = {}) {
     // Auto-generate seed by combining controller seed + component ID
     const seed = this.#random?.seed
       ? `${this.#random?.seed}-${seedFragment}`
       : undefined
 
     return new Random({
-      seed,
       ...this.#random,
+      seed,
       ...options, // Allow manual override of global options
     })
   }
