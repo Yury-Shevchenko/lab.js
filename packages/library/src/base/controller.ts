@@ -3,7 +3,7 @@ import { Component, Status } from './component'
 import { Lock } from './util/lock'
 import { Emitter } from './util/emitter'
 
-import { last } from 'lodash'
+import { isEqual, last } from 'lodash'
 import { Parser, defaultParser } from './util/parse'
 
 export class Controller<C extends Component = Component> extends Emitter {
@@ -178,7 +178,7 @@ export class Controller<C extends Component = Component> extends Emitter {
 
         // Handle the edge case of jumping without changing the stack --
         // in this case we jump to the currently running component, restarting it
-        if (commonStack.length === currentStackIds.length) {
+        if (isEqual(commonStack.length, currentStackIds.length)) {
           commonStack.pop()
         }
 
