@@ -8,7 +8,8 @@ import Icon from '../../Icon'
 import { SystemContext } from '../../System'
 
 import { populateCache } from '../../../logic/io/preview'
-import { addDebugPlugin } from '../../../logic/io/export/modifiers/preview'
+import { addDebugPlugin, previewAssemblyOptions }
+  from '../../../logic/io/export/modifiers/preview'
 import { addDownloadPlugin } from '../../../logic/io/export/modifiers/local'
 import PreviewWindow from '../../../logic/io/preview/PreviewWindow'
 
@@ -63,7 +64,7 @@ export default class PreviewButton extends Component {
       await populateCache(
         store.getState(),
         state => addDownloadPlugin(addDebugPlugin(state)),
-        { headerOptions: { dev: true }}, // load development build for preview
+        previewAssemblyOptions,
       )
 
       // Reload page to provided URL
