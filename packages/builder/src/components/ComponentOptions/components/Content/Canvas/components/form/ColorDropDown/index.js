@@ -120,6 +120,14 @@ export default ({ name, disabled,
             type="text" placeholder="CSS color"
             className="form-control w-100 text-monospace"
             {...field}
+            // The dropdown ignores keys pressed in inputs,
+            // so close it on escape here
+            onKeyDown={ e => {
+              if (e.key === 'Escape') {
+                e.preventDefault()
+                setDropdownOpen(false)
+              }
+            } }
           />
         </DropdownItem>
       </DropdownMenu>
