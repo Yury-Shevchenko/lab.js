@@ -33,6 +33,10 @@ export default class Preview {
     // Reset window location instead of merely reloading,
     // to make sure that the URL preview is correct.
     if (this.window) {
+      // Let the preview know that it is being restarted,
+      // so that it can leave without asking (see the
+      // preview assembly options)
+      this.window.labjsPreviewRestart = true
       this.window.location.href = url || this.url
     }
   }

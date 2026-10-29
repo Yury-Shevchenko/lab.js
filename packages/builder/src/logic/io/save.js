@@ -1,4 +1,4 @@
-import { cloneDeep, pick, mapValues, omitBy, pickBy } from 'lodash'
+import { cloneDeep, pick, mapValues, omit, omitBy, pickBy } from 'lodash'
 import moment from 'moment'
 import { saveAs } from 'file-saver'
 
@@ -32,9 +32,11 @@ export const stateToJSON = (state, exportedComponent='root',
     : [ exportedComponent ]
 
   // Remove internal options relating to UI state
-  // (that start with an underscore)
+  // (that start with an underscore). The last open
+  // tab is never saved, so that a study file always
+  // opens on each component's default tab
   const filteredComponents = !removeInternals
-    ? components
+    ? mapValues(components, c => omit(c, '_tab'))
     : mapValues(components, c => omitBy(c, (v, k) => k.startsWith('_')))
 
   // Save only files that are embedded

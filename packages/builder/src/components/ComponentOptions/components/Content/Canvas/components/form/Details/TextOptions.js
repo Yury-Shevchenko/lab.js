@@ -6,7 +6,7 @@ import { Field } from 'formik'
 
 import Icon from '../../../../../../../Icon'
 
-export default ({ selection, changeHandler }) =>
+export default ({ selection, changeHandler, toggle }) =>
   <DropdownMenu
     style={{
       width: '200px',
@@ -75,6 +75,14 @@ export default ({ selection, changeHandler }) =>
           name="fontSize"
           placeholder="Size"
           className="form-control text-monospace"
+          // The dropdown ignores keys pressed in inputs,
+          // so close it on escape here
+          onKeyDown={ e => {
+            if (e.key === 'Escape') {
+              e.preventDefault()
+              toggle()
+            }
+          } }
         />
       </InputGroup>
     </DropdownItem>
