@@ -1,21 +1,9 @@
 /* Actual button styles */
 div.addButton {
-  height: 2px;
-  margin: 0;
-  overflow-y: hidden;
-  opacity: 0;
-
-  /* The animation is design to add margins first,
-     then expand the button, and finally add opacity.
-     These factors are controlled so that the button
-     borders have passed any element above before
-     they are visible to avoid overlaps */
-  transition: height 0.20s 0.05s, margin 0.20s 0.04s,
-    opacity 0.10s 0.06s, color 0.10s 0.06s, border 0.10s 0.06s;
-
   font-size: 0.8rem;
   text-align: center;
   color: var(--secondary);
+  background-color: var(--white);
   border-radius: 0.25rem;
   border: 1px solid var(--secondary);
 }
@@ -24,12 +12,32 @@ div.addButton:hover {
   color: var(--gray);
 }
 
-div.nodeGap:hover div.addButton,
+/* Between nodes, the button is laid over the gap
+   instead of expanding it, so that the tree doesn't
+   shift as the cursor passes over it. Until the gap
+   is hovered, the button stays invisible and lets
+   clicks and drags through to the nodes and drop
+   targets below */
+div.addButton:not(.addButton-pinned) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.10s 0.06s, color 0.10s 0.06s, border 0.10s 0.06s;
+}
+
+div.nodeGap:hover div.addButton {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* In empty sequences and loops, the button is always shown */
 div.addButton.addButton-pinned {
   height: 28px;
   margin: 12px 0;
-  border: 1px solid var(--secondary);
-  opacity: 1;
 }
 
 .dropTarget.dropTarget-hover div.addButton {
@@ -41,4 +49,8 @@ div.addButton > .fa-plus {
   display: block;
   position: relative;
   top: 0.475rem;
+}
+
+div.addButton:not(.addButton-pinned) > .fa-plus {
+  top: 0.2rem;
 }
