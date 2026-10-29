@@ -2,7 +2,7 @@ import { pickBy, cloneDeep, fromPairs, mapValues } from 'lodash'
 import { embeddedFiles } from '../../util/files'
 import { embedPlugins } from '../../plugins'
 import { makeDataURI } from '../../util/dataURI'
-import { makeScript } from './script.js'
+import { makeScript, makeStudyTree } from './script.js'
 import { makeHTML } from './html.js'
 
 // TODO: At some later point, header options
@@ -54,6 +54,10 @@ const assemble = (state,
   // Reassemble state object that now includes the generated script,
   // as well as any additional files required for the deployment target
   return {
+    // studyTree is the serialized component-tree expression expected by
+    // lab.util.fromObject / run app's deserialize(). It is computed here
+    // (on updatedState) so that plugin paths are already injected.
+    studyTree: makeStudyTree(updatedState),
     files: {
       // Static files stored in state
       ...files,

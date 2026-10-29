@@ -55,6 +55,7 @@
   },
   "scripts": {
     "start": "yarn run static:library && react-app-rewired start",
+    "start:openlab": "PORT=3100 yarn start",
     "start:demo": "HTTPS=true PORT=443 DOMAIN=labjs.felixhenninger.com yarn start",
     "build": "yarn run static:library && react-app-rewired build && node scripts/postprocess_build.js",
     "test": "react-app-rewired test --env=jsdom",

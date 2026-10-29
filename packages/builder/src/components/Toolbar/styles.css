@@ -1,4 +1,6 @@
-.toolbar button .fas, .toolbar button .far, .toolbar button .fal {
+.toolbar button .fas,
+.toolbar button .far,
+.toolbar button .fal {
   position: relative;
   top: 0.05rem;
 }

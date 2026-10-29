@@ -1,4 +1,5 @@
 import { fromObject } from '../io/load'
+import { fromOpenLab } from './fromOpenLab'
 
 // Load a study from a remote URL
 export const fromURL = async () => {
@@ -10,25 +11,31 @@ export const fromURL = async () => {
     return
   }
 
-  // Extract url parameter from path
+  // 1) Open Lab integration: ?t=<id>
+  const openLabTaskId = location.searchParams.get('t')
+
+  if (openLabTaskId) {
+    return await fromOpenLab(openLabTaskId)
+  }
+
+  // 2) Existing behavior: ?url=<json-url>
   const url = location.searchParams.get('url')
 
   // Make sure URL is present and the user knows what is happening
-  if (
-    url &&
-    window.confirm(`Would you like to load the study from ${ url }?`)
-  ) {
+  if (url && window.confirm(`Would you like to load the study from ${url}?`)) {
     let response
     try {
       response = await fetch(url)
-    } catch(e) {
-      alert(`Connection error while trying to load remote study: ${ e }`)
+    } catch (e) {
+      alert(`Connection error while trying to load remote study: ${e}`)
       return
     }
 
     // Catch 404 responses, etc.
     if (!response.ok) {
-      alert(`Invalid response while loading remote study, code ${ response.status }: ${ response.statusText }`)
+      alert(
+        `Invalid response while loading remote study, code ${response.status}: ${response.statusText}`,
+      )
       return
     }
 
@@ -36,8 +43,8 @@ export const fromURL = async () => {
     let data
     try {
       data = await response.json()
-    } catch(e) {
-      alert(`Couldn't decode study data: ${ e }`)
+    } catch (e) {
+      alert(`Couldn't decode study data: ${e}`)
       return
     }
 
@@ -45,7 +52,7 @@ export const fromURL = async () => {
     const state = fromObject(data)
 
     // Remove URL parameter
-    window.history.pushState({}, document.title, "/")
+    window.history.pushState({}, document.title, '/')
 
     // Return new application state
     return state

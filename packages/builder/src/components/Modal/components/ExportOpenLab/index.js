@@ -16,7 +16,7 @@ const ExportOpenLab = ({ closeHandler }) => {
       widget.current.submit()
     } }
   >
-    <p><strong><a href="https://www.open-lab.online/" target="_blank" rel="noopener noreferrer">Open Lab</a></strong> takes care of running your experiment and collecting, storing and managing data. It supports collaboration in projects, customization of task parameters and invitation of participants. The basic version of the application is available for free. </p>
+    <p><strong><a href="https://research.open-lab.online/" target="_blank" rel="noopener noreferrer">Open Lab</a></strong> takes care of running your experiment and collecting, storing and managing data. It supports collaboration in projects, customization of task parameters and invitation of participants. The basic version of the application is available for free. </p>
     <OpenLabWidget
       ref={ widget }
     />

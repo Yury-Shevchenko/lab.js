@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useStore } from 'react-redux'
 
 import {
@@ -13,17 +13,94 @@ import Uploader from '../../../Uploader'
 import Icon from '../../../Icon'
 
 import { fromJSON } from '../../../../logic/io/load'
-import { stateToDownload } from '../../../../logic/io/save'
+import { stateToDownload, stateToJSON } from '../../../../logic/io/save'
 import downloadStaticLocal from '../../../../logic/io/export/modifiers/local'
-import downloadStaticJatos from '../../../../logic/io/export/modifiers/jatos'
-import downloadStaticPavlovia from '../../../../logic/io/export/modifiers/pavlovia'
+
 import { downloadSidecar as downloadPsychDS } from '../../../../logic/metadata/psych-ds'
 
-// TODO: Refactor dispatch calls to action creators
+const RESEARCHER_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://research.open-lab.online'
+    : 'http://localhost:3000'
 
+export const useSaveToOpenLab = () => {
+  const store = useStore()
+  const [saveState, setSaveState] = useState('idle') // idle | saving | saved | error
+
+  const taskId = new URL(window.location.href).searchParams.get('t')
+
+  const saveToOpenLab = useCallback(async () => {
+    setSaveState('saving')
+
+    const state = store.getState()
+    const stateJSON = stateToJSON(state)
+    const title = state.components?.root?.metadata?.title || 'Unnamed study'
+    const description = state.components?.root?.metadata?.description || ''
+
+    const formData = new window.FormData()
+    formData.append(
+      'script',
+      new Blob([stateJSON], { type: 'application/json;charset=utf-8' }),
+      'labjs-study.json',
+    )
+
+    formData.append('name', title)
+    formData.append('description', description)
+    if (taskId) {
+      formData.append('taskId', taskId)
+    }
+
+    try {
+      const res = await fetch(`${RESEARCHER_URL}/api/v1/tests/labjs`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!res.ok) {
+        const { error } = await res.json().catch(() => ({}))
+        alert(`Save failed: ${error || res.statusText}`)
+        setSaveState('error')
+        return
+      }
+
+      const body = await res.json()
+
+      setSaveState('saved')
+      setTimeout(() => setSaveState('idle'), 3000)
+
+      // Open the uploaded task in Open Lab
+      if (body.uploadUrl) {
+        window.open(body.uploadUrl, '_blank', 'noopener,noreferrer')
+      }
+    } catch (e) {
+      alert(`Save failed: ${e}`)
+      setSaveState('error')
+    }
+  }, [store, taskId])
+
+  const saveButtonLabel = () => {
+    switch (saveState) {
+      case 'saving':
+        return 'Saving…'
+      case 'saved':
+        return 'Saved ✓'
+      case 'error':
+        return 'Save to Open Lab'
+      default:
+        return 'Save to Open Lab'
+    }
+  }
+
+  return { saveToOpenLab, saveState, saveButtonLabel }
+}
+
+// TODO: Refactor dispatch calls to action creators
 const IOButton = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const store = useStore()
+  const taskId = new URL(window.location.href).searchParams.get('t')
+
+  const { saveToOpenLab, saveState, saveButtonLabel } = useSaveToOpenLab()
 
   return (
     <ButtonDropdown
@@ -91,79 +168,39 @@ const IOButton = () => {
         </DropdownItem>
         <DropdownItem divider />
         <DropdownItem header>Deploy study online</DropdownItem>
-        {/* <DropdownItem
-        onClick={
-          () => store.dispatch({
-            type: 'SHOW_MODAL',
-            modalType: 'EXPORT_PHP',
-            modalProps: {},
-          })
-        }
-      >
-        Generic web host… <span className="text-muted">(PHP backend)</span>
-      </DropdownItem>
-      <DropdownItem
-        onClick={
-          () => store.dispatch({
-            type: 'SHOW_MODAL',
-            modalType: 'EXPORT_NETLIFY',
-            modalProps: {},
-          })
-        }
-      >
-        Upload to Netlify… <span className="text-muted">(cloud provider)</span>
-      </DropdownItem> */}
-        <DropdownItem
-          onClick={() =>
-            store.dispatch({
-              type: 'SHOW_MODAL',
-              modalType: 'EXPORT_OPENLAB',
-              modalProps: {},
-            })
-          }
-        >
-          Upload to Open Lab…
-        </DropdownItem>
-        {/* <DropdownItem divider /> */}
-        {/* <DropdownItem header>Export as integration</DropdownItem>
-        <DropdownItem
-          onClick={() =>
-            store.dispatch({
-              type: 'SHOW_MODAL',
-              modalType: 'EXPORT_PM',
-              modalProps: {},
-            })
-          }
-        >
-          Generic survey tools…{' '}
-          <span className="text-muted">(Qualtrics, etc.)</span>
-        </DropdownItem>
-        <DropdownItem onClick={() => downloadStaticJatos(store.getState())}>
-          JATOS{' '}
-          <span className="text-muted">
-            (Just Another Tool for Online Studies)
-          </span>
-        </DropdownItem>
-        <DropdownItem onClick={() => downloadStaticPavlovia(store.getState())}>
-          Pavlovia
-        </DropdownItem>
-        <DropdownItem
-          onClick={() =>
-            store.dispatch({
-              type: 'SHOW_MODAL',
-              modalType: 'EXPORT_EXPFACTORY',
-              modalProps: {},
-            })
-          }
-        >
-          The Experiment Factory… <span className="text-muted">(v3)</span>
-        </DropdownItem>
-        <DropdownItem divider />
-        <DropdownItem header>Generate metadata</DropdownItem>
-        <DropdownItem onClick={() => downloadPsychDS(store.getState())}>
-          Psych-DS sidecar template{' '}
-          <span className="text-muted">(JSON-LD)</span>
-        </DropdownItem> */}
+        {taskId ? (
+          <>
+            <DropdownItem
+              disabled={saveState === 'saving'}
+              onClick={saveToOpenLab}
+            >
+              {saveButtonLabel()}
+            </DropdownItem>
+            <DropdownItem
+              onClick={() =>
+                window.open(
+                  `${RESEARCHER_URL}/dashboard/tasks/${taskId}`,
+                  '_blank',
+                  'noopener,noreferrer',
+                )
+              }
+            >
+              View task on Open Lab
+            </DropdownItem>
+          </>
+        ) : (
+          <DropdownItem
+            onClick={() =>
+              store.dispatch({
+                type: 'SHOW_MODAL',
+                modalType: 'EXPORT_OPENLAB',
+                modalProps: {},
+              })
+            }
+          >
+            Upload to Open Lab…
+          </DropdownItem>
+        )}
       </DropdownMenu>
     </ButtonDropdown>
   )

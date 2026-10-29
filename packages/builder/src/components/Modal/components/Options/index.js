@@ -17,7 +17,7 @@ const TabContent = ({ tab }) => {
   // TODO: Refactor to use connect()
   const store = useStore()
   const files = store.getState().files.files
-  switch(tab) {
+  switch (tab) {
     case 'meta':
       return <MetadataForm />
     case 'plugins':
@@ -29,14 +29,14 @@ const TabContent = ({ tab }) => {
         <div className="d-flex flex-column" style={{ minHeight: '60vh' }}>
           <Editor
             key="html"
-            value={ readDataURI(files['index.html'].content).data }
-            onChange={
-              newContent => store.dispatch({
+            value={readDataURI(files['index.html'].content).data}
+            onChange={newContent =>
+              store.dispatch({
                 type: 'UPDATE_FILE',
                 file: 'index.html',
                 data: {
-                  content: makeDataURI(newContent, 'text/html')
-                }
+                  content: makeDataURI(newContent, 'text/html'),
+                },
               })
             }
           />
@@ -49,14 +49,14 @@ const TabContent = ({ tab }) => {
             key="css"
             height="400"
             language="css"
-            value={ readDataURI(files['style.css'].content).data }
-            onChange={
-              newContent => store.dispatch({
+            value={readDataURI(files['style.css'].content).data}
+            onChange={newContent =>
+              store.dispatch({
                 type: 'UPDATE_FILE',
                 file: 'style.css',
                 data: {
-                  content: makeDataURI(newContent, 'text/css')
-                }
+                  content: makeDataURI(newContent, 'text/css'),
+                },
               })
             }
           />
@@ -73,31 +73,28 @@ const OptionsModal = ({ closeHandler }) => {
   return (
     <div className="modal-content">
       <Nav tabs>
-        <NavEntry id="meta" activeId={ tab } setId={ setTab }>
+        <NavEntry id="meta" activeId={tab} setId={setTab}>
           <Icon icon="info" weight="s" />
         </NavEntry>
-        <NavEntry id="plugins" activeId={ tab } setId={ setTab }>
+        {/* <NavEntry id="plugins" activeId={tab} setId={setTab}>
           <Icon icon="plug" />
-        </NavEntry>
-        <NavEntry id="files" activeId={ tab } setId={ setTab }>
+        </NavEntry> */}
+        <NavEntry id="files" activeId={tab} setId={setTab}>
           <Icon icon="folder" />
         </NavEntry>
-        <NavEntry id="html" activeId={ tab } setId={ setTab }>
+        <NavEntry id="html" activeId={tab} setId={setTab}>
           HTML
         </NavEntry>
-        <NavEntry id="css" activeId={ tab } setId={ setTab }>
+        <NavEntry id="css" activeId={tab} setId={setTab}>
           CSS
         </NavEntry>
-        <NavCloseModal onClick={ closeHandler } />
+        <NavCloseModal onClick={closeHandler} />
       </Nav>
       <ModalBody>
-        <TabContent tab={ tab } />
+        <TabContent tab={tab} />
       </ModalBody>
       <ModalFooter>
-        <Button
-          outline color="secondary"
-          onClick={ closeHandler }
-        >
+        <Button outline color="secondary" onClick={closeHandler}>
           Done
         </Button>
       </ModalFooter>
