@@ -6,7 +6,7 @@ import { DropTarget } from 'react-dnd'
 import classnames from 'classnames'
 import { isEqual, flow } from 'lodash'
 
-import { parents } from '../../../../logic/tree'
+import { parents, moveTargetIndex } from '../../../../logic/tree'
 
 import './index.css'
 
@@ -31,13 +31,14 @@ const targetSpec = {
     const { id, parentId: oldParent, index: oldIndex } = monitor.getItem()
 
     // Information from DropTarget
-    const { id: newParent, index: newIndex } = targetProps
+    const { id: newParent, index: gap } = targetProps
 
     targetProps.dispatch({
       type: 'MOVE_COMPONENT',
       id,
       oldParent, oldIndex,
-      newParent, newIndex,
+      newParent,
+      newIndex: moveTargetIndex({ oldParent, oldIndex, newParent, newIndex: gap }),
     })
   },
   canDrop: (targetProps, monitor) => {
