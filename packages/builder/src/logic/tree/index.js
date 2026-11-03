@@ -24,6 +24,15 @@ export const parents = (target, tree) => {
   )
 }
 
+// A drop target's index counts the gaps of its parent during the drag, with
+// the dragged component still in place. MOVE_COMPONENT expects the position
+// after that component has been taken out. So a move towards the end of the
+// same parent ends up one position before the number of the gap.
+export const moveTargetIndex = ({ oldParent, oldIndex, newParent, newIndex }) =>
+  oldParent === newParent && newIndex > oldIndex
+    ? newIndex - 1
+    : newIndex
+
 // Generate flat representation of tree,
 // alongside some component metadata
 export const flatTree = (tree, id='root', level=0) => {
