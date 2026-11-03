@@ -12,6 +12,13 @@
   padding: 10px 0;
 }
 
+/* The last gap of a nested list sits directly above the next gap of the list
+   around it, which would cover all but its top 4px. So that both can be reached,
+   the gap takes up more room while a component is being dragged */
+.dropTarget.dropTarget-available.dropTarget-last:not(.dropTarget-children):not(.dropTarget-hover) {
+  margin-bottom: 13px;
+}
+
 .dropTargetButton {
   height: 0;
   opacity: 0;

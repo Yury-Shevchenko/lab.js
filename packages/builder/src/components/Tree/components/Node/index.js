@@ -55,7 +55,7 @@ NodeBody.contextTypes = {
   onNodeDuplicate: PropTypes.func,
 }
 
-const NodeGap = ({ id, index, onNodeAdd, pinned }) =>
+const NodeGap = ({ id, index, last, onNodeAdd, pinned }) =>
   <div className="nodeGap">
     {
       pinned
@@ -68,7 +68,7 @@ const NodeGap = ({ id, index, onNodeAdd, pinned }) =>
           </DropTarget>
         : <div>
             <DropTarget
-              id={ id } index={ index }
+              id={ id } index={ index } last={ last }
             />
             <AddButton
               id={ id } index={ index }
@@ -102,6 +102,7 @@ const NodeTail = ({ id, children, pinned, vacancies }, { onNodeAdd }) =>
               <NodeGap
                 id={ id }
                 index={ childIndex + 1 }
+                last={ childIndex === children.length - 1 }
                 onNodeAdd={ onNodeAdd }
               />
           }
