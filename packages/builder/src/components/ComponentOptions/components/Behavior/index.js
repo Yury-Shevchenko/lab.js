@@ -15,7 +15,7 @@ export default ({ id, data }) =>
       'tardy', 'timeline', 'timeout',
     ] }
   >
-    <Timeline />
+    <Timeline id={ id } />
     <Responses />
     <Meta />
   </Form>
