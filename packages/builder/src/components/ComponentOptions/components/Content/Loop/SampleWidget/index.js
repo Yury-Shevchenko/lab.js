@@ -6,22 +6,7 @@ import { FormGroup, Label, Col, InputGroup } from 'reactstrap'
 import Hint from '../../../../../Hint'
 import { Input } from '../../../../../Form'
 import { integerOrPlaceholder } from '../../../Behavior/components/Timeline/util'
-
-const switchLabels = ({
-  templateParameters={ rows: [] },
-  sample={ n: undefined }
-}, labels) => {
-  const samples = parseInt(sample.n)
-  const parameters = templateParameters.rows.length
-
-  if (samples < parameters) {
-    return labels[0]
-  } else if (isNaN(samples) || samples === parameters) {
-    return labels[1]
-  } else {
-    return labels[2]
-  }
-}
+import { switchLabels } from './labels'
 
 export default () => {
   const { values } = useFormikContext()
