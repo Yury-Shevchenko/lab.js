@@ -120,4 +120,7 @@ export class Frame extends Component {
 Frame.metadata = {
   module: ['canvas'],
   nestedComponents: ['content'],
+  parsableOptions: {
+    context: {},
+  },
 }
