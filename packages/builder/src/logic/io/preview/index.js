@@ -21,7 +21,14 @@ export const prePopulateCache = async () => {
   const cache = await caches.open(cacheName)
   await cache.addAll(
     bundledFiles.map(
-      path => `${ process.env.PUBLIC_URL }/api/_defaultStatic/${ path }`
+      // These files keep their names from one deploy to the next, and nginx
+      // lets browsers keep them for 30 days. Without asking the server, a
+      // returning researcher previews with the old library until that runs out.
+      // 'no-cache' asks every time, and an unchanged file costs only a 304.
+      path => new Request(
+        `${ process.env.PUBLIC_URL }/api/_defaultStatic/${ path }`,
+        { cache: 'no-cache' },
+      )
     )
   )
 }
