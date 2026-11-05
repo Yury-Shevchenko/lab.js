@@ -95,7 +95,7 @@ class OpenLabWidget extends Component {
       case 'done':
         return <>
           <p>
-            <strong className="text-success">Uploaded study.</strong> Please finalize the transfer by following the link below.
+            <strong className="text-success">Uploaded.</strong> Please finish the transfer with the link below, which saves it as a task on Open Lab.
           </p>
           <a
             className="btn btn-outline-primary btn-lg btn-block"
@@ -103,7 +103,7 @@ class OpenLabWidget extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Manage study on Open Lab
+            Save as a task on Open Lab
           </a>
         </>
       case 'too_large':
