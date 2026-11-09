@@ -137,14 +137,15 @@ export class Component extends BaseComponent {
       this.id ?? '', // ID is defined only on base.Component ATM
       this.options.random,
     )
-    // Create timeline
+    // directCall can only be true at this point
+    await super.prepare(force)
+
+    // Create timeline, from the options with their placeholders filled in
+    // (until super.prepare, this.options returns the raw options)
     this.internals.timeline = new Timeline(
       this.internals.controller,
       this.options.timeline,
     )
-
-    // directCall can only be true at this point
-    await super.prepare(force)
 
     await Promise.all([
       this.global.cache.images.getAll(this.options.media?.images ?? []),
