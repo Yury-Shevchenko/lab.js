@@ -262,7 +262,12 @@ class AudioNodeItem {
   }
 
   teardown() {
-    this.source!.disconnect()
+    // A component's end runs twice (the uncontrolled and the controlled
+    // pass), so teardown is scheduled twice; the second call has nothing
+    // left to do.
+    if (!this.source) return
+
+    this.source.disconnect()
     this.source = undefined
 
     this.processingChain.forEach(n => n.disconnect())
