@@ -6,6 +6,7 @@ import serialize from 'serialize-javascript'
 import { makeType } from '../../util/makeType'
 import { adaptiveFunction } from '../../util/async'
 import { slugify } from '../../util/slug'
+import { processTimeline } from './timeline'
 
 // Generic grid processing
 const processGrid = (grid, colnames=null, types=undefined) =>
@@ -159,6 +160,9 @@ const processNode = node => {
     templateParameters: node.templateParameters
       ? processTemplateParameters(node.templateParameters)
       : node.templateParameters,
+    timeline: Array.isArray(node.timeline)
+      ? processTimeline(node.timeline)
+      : node.timeline,
     shuffleGroups: node.templateParameters
       ? processShuffleGroups(node.templateParameters.columns || [])
       : node.shuffleGroups,
